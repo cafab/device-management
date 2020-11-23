@@ -1,0 +1,8 @@
+.idea
+.bash_history
+.pylint.d/
+.cache
+__pycache__
+venv
+node_modules
+
