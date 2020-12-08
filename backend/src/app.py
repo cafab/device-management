@@ -4,7 +4,9 @@ app.py
 """
 from flask import Flask
 from flask_cors import CORS
+from src.jwt import jwt
 from src.models import db
+from src.api import api
 
 
 def create_app():
@@ -12,13 +14,13 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object("src.config.BaseConfig")
     CORS(app)
-    db.init_app(app)
 
+    jwt.init_app(app)
+
+    db.init_app(app)
     with app.app_context():
         db.create_all()
 
-    @app.route("/")
-    def index():
-        return "Hello Fabio!"
+    app.register_blueprint(api, url_prefix="/api")
 
     return app
