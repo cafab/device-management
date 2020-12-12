@@ -2,4 +2,6 @@ Flask
 Flask-Cors
 Flask-SQLAlchemy
 Flask-JWT-Extended
-psycopg2
+Click
+argon2_cffi
+psycopg2-binary
