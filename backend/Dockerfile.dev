@@ -21,7 +21,7 @@ FROM python:slim
 
 # reinstall libpq because psycopg2 relies on the libpq library at runtime
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y libpq5
+    apt-get install --no-install-recommends -y libpq5 netcat
 
 # copy virtual environment from BUILDER with all installed packages
 COPY --from=builder /install /usr/local
@@ -36,3 +36,5 @@ COPY . /app
 WORKDIR /app
 
 CMD flask run --host 0.0.0.0
+
+
