@@ -178,7 +178,7 @@ axios.interceptors.request.use((request) => {
  * request, otherwise an error.
  */
 export function login(userData) {
-  return axios.post("/login/", userData);
+  return axios.post("/login", userData);
 }
 
 /**
@@ -186,9 +186,9 @@ export function login(userData) {
  * refresh token on the backend.
  */
 export function revokeTokens() {
-  let revokeAccessToken = () => axios.delete("/revoke-access-token/");
+  let revokeAccessToken = () => axios.delete("/revoke-access-token");
   let revokeRefreshToken = () =>
-    axios.delete("/revoke-refresh-token/", { useRefreshToken: true });
+    axios.delete("/revoke-refresh-token", { useRefreshToken: true });
 
   /**
    * Do not revoke access token if it already expired,
@@ -209,7 +209,7 @@ export function revokeTokens() {
  * token instead of the access token.
  */
 export function postRefreshToken(handlerEnabled) {
-  return axios.post("/token/refresh/", null, {
+  return axios.post("/token/refresh", null, {
     skipAuthRefresh: true,
     useRefreshToken: true,
     handlerEnabled: handlerEnabled,
@@ -220,7 +220,7 @@ export function postRefreshToken(handlerEnabled) {
  * Any empty request to the backend to check if the user is still logged in.
  */
 export function getCheckLoggedIn(handlerEnabled) {
-  return axios.get("/check-logged-in/", { handlerEnabled: handlerEnabled });
+  return axios.get("/check-logged-in", { handlerEnabled: handlerEnabled });
 }
 
 /**
@@ -230,6 +230,8 @@ export function getDevices() {
   return axios.get("/devices");
 }
 
-
+export function editDevice(payload) {
+  return axios.put("/edit-device", payload);
+}
 
 

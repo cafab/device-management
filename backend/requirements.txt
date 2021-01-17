@@ -3,3 +3,5 @@ Flask-Cors
 Flask-SQLAlchemy
 Flask-JWT-Extended
 psycopg2
+argon2-cffi
+marshmallow-sqlalchemy
