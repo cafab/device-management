@@ -24,7 +24,7 @@ export default {
 <style scoped>
 .router-view {
   min-height: 100vh;
-  margin-top: 8vh;
+  margin-top: 7vh;
   padding-left: 0.5vw;
   padding-right: 0.5vw;
 }

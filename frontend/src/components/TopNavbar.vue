@@ -10,6 +10,7 @@
         v-if="isAuthenticated"
         tag="router-link"
         :to="{ path: '/dashboard' }"
+        class="is-info"
       >
         Dashboard
       </b-navbar-item>
@@ -17,9 +18,16 @@
     <template slot="end">
       <b-navbar-item v-if="!isAuthenticated" tag="div">
         <div class="buttons">
-          <router-link to="/login" class="button is-primary">
+          <router-link to="/login" class="button is-info">
             Login
           </router-link>
+        </div>
+      </b-navbar-item>
+      <b-navbar-item v-else tag="div">
+        <div class="buttons" tag="div">
+          <div @click="logout">
+            <router-link to="/" class="button is-info"> Logout </router-link>
+          </div>
         </div>
       </b-navbar-item>
     </template>
@@ -65,11 +73,13 @@ export default {
 </script>
 
 <style scoped>
+
+
 .navbar-title {
   font-family: Helvetica, sans-serif;
-  font-style: italic;
   font-size: 25px;
   font-weight: 900;
-  color: rgb(121, 87, 213);
+  color: #167df0;
 }
 </style>
+

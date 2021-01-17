@@ -5,17 +5,17 @@ in the api.py file.
 """
 from flask import jsonify
 from flask_jwt_extended import JWTManager
-from src.blacklist import BLACKLIST
 
 
 jwt = JWTManager()
+blacklist = set()
 
 
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
     """Checks if a token has been blacklisted and will be called automatically when
     JWT_BLACKLIST_ENABLED is true. We add the token's unique identifier (jti) to the blacklist."""
-    return decrypted_token["jti"] in BLACKLIST
+    return decrypted_token["jti"] in blacklist
 
 
 @jwt.revoked_token_loader
