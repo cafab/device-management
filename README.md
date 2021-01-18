@@ -9,7 +9,7 @@ Following technologies have been used:
 
 - [**Flask**](https://palletsprojects.com/p/flask/) *as a Python REST-API resource server backend.*
 - [**Vue.js**](https://vuejs.org/) *as a Javascript SPA client frontend.*
-- [**PostgreSQL**](https://www.postgresql.org/) *as a relational database for storing sensitive information about the user.*
+- [**PostgreSQL**](https://www.postgresql.org/) *as a relational database.*
 - [**Docker**](https://www.docker.com/) *in order to isolate and virtualize each application component above in a container.*
 
 ## What I learned
