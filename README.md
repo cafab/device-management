@@ -35,7 +35,7 @@ Prerequisites: Make sure you have [**Docker**](https://docs.docker.com/get-docke
 
 5. &nbsp;Seed the Postgres Database with random devices and their purchase details data. For this, execute the following command in the project root:
 &nbsp;`docker-compose exec backend python manage.py seed_db`&nbsp;. You'll be informed that the database, the admin login account and the random
-devices have been created. Username is `admin` and the password is `pass`.
+devices have been created.
 
 5. Open your favourite browser and enter &nbsp;`http://localhost:8080`&nbsp; in the address bar in order to call the Vue app.
 
