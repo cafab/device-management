@@ -14,10 +14,9 @@ Following technologies have been used:
 
 ## What I learned
 
-About Vue.js I gained more experience through this little project. For example data that is passed as props to the child component
-should not be modified, instead make a separate object in the `data()` property. Also the reactivity system of Vue I learned the
-hard way. Changes aren't immediately visible in the DOM when using a simple Javascript state management object. Instead for a simple
-store, use the `Vue.obeservable()` object, which then can be used in the computed property of a component. Also about JWT and how they
+About Vue.js I gained more experience through this little project. For example data that get passed as props to the child component
+should not be modified, instead make a separate object in the `data()` property and copy the props values to this object. 
+Also the reactivity system of Vue I learned the hard way. Changes aren't immediately visible in the DOM when using a simple Javascript state management object. Instead for a simple store, use the `Vue.obeservable()` object, which then can be used in the computed property of a component. Also about JWT and how they
 should be stored I learned a lot. In this project I saved both, the access and refresh token in memory, therefore if you refresh the
 browser you will be logged out of the app. How to intercept requests with axios was also vey educational.
 
