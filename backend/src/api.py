@@ -4,8 +4,7 @@ from flask_jwt_extended import (
     create_refresh_token,
     jwt_required,
     get_jwt_identity,
-    jwt_refresh_token_required,
-    get_raw_jwt,
+    get_jwt
 )
 from src.models import db, User, Computer, PurchaseDetails, ComputerSchema, PurchaseDetailsSchema
 from src.jwt import blacklist
@@ -21,7 +20,7 @@ api = Blueprint("api", __name__)
 
 
 @api.route("/devices", methods=["GET"])
-@jwt_required
+@jwt_required()
 def get_devices():
     devices = Computer.query.all()
     json_data = ComputerSchema(many=True).dump(devices)
@@ -33,7 +32,7 @@ def get_devices():
 
 
 @api.route("/edit-device", methods=["PUT"])
-@jwt_required
+@jwt_required()
 def put_edit_devices():
     data = request.get_json()
 
@@ -89,17 +88,17 @@ def login():
 
 
 @api.route("/check-logged-in", methods=["GET"])
-@jwt_required
+@jwt_required()
 def get_check_logged_in():
     return ""
 
 
 # Blacklist the access token when the user logs out
 @api.route("/revoke-access-token", methods=["DELETE"])
-@jwt_required
+@jwt_required()
 def revoke_access_token():
     """Endpoint for revoking the current users access token."""
-    jti = get_raw_jwt()["jti"]
+    jti = get_jwt()["jti"]
     blacklist.add(jti)
 
     return dict(message="Successfully revoked access token")
@@ -107,17 +106,17 @@ def revoke_access_token():
 
 # Blacklist the refresh token when the user logs out
 @api.route("/revoke-refresh-token", methods=["DELETE"])
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 def revoke_refresh_token():
     """Endpoint for revoking the current users refresh token."""
-    jti = get_raw_jwt()["jti"]
+    jti = get_jwt()["jti"]
     blacklist.add(jti)
 
     return dict(message="Successfully revoked refresh token")
 
 
 @api.route("/token/refresh", methods=["POST"])
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 def refresh():
     """Refresh token endpoint in order to get a new access token.
     A blacklisted refresh token will not be able to access this endpoint."""

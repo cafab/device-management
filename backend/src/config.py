@@ -18,6 +18,4 @@ class BaseConfig:
     # Flask-JWT-Extended
     JWT_ACCESS_TOKEN_EXPIRES = 10  # 5 minutes
     JWT_REFRESH_TOKEN_EXPIRES = 43200  # 12 hours
-    JWT_BLACKLIST_ENABLED = True
-    JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
     JWT_SECRET_KEY = "mysecretkey"  # CHANGE THE KEY!

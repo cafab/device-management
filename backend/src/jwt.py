@@ -11,15 +11,15 @@ jwt = JWTManager()
 blacklist = set()
 
 
-@jwt.token_in_blacklist_loader
-def check_if_token_in_blacklist(decrypted_token):
+@jwt.token_in_blocklist_loader
+def check_if_token_in_blacklist(jwt_header, jwt_payload):
     """Checks if a token has been blacklisted and will be called automatically when
     JWT_BLACKLIST_ENABLED is true. We add the token's unique identifier (jti) to the blacklist."""
-    return decrypted_token["jti"] in blacklist
+    return jwt_payload["jti"] in blacklist
 
 
 @jwt.revoked_token_loader
-def revoked_token():
+def revoked_token(jwt_header, jwt_payload):
     """Checks if a token has been revoked."""
     return (
         jsonify({"message": "The token has been revoked.", "error": "token_revoked"}),
@@ -29,7 +29,7 @@ def revoked_token():
 
 # The following callbacks are used for customizing jwt response/error messages.
 @jwt.expired_token_loader
-def expired_token():
+def expired_token(jwt_header, jwt_payload):
     """Checks if a token has expired."""
     return (
         jsonify({"message": "The token has expired.", "error": "token_expired"}),
@@ -38,7 +38,7 @@ def expired_token():
 
 
 @jwt.invalid_token_loader
-def invalid_token(_):
+def invalid_token(message):
     """Checks if a token is invalid."""
     return (
         jsonify(
@@ -49,12 +49,12 @@ def invalid_token(_):
 
 
 @jwt.unauthorized_loader
-def missing_token(_):
+def missing_token(message):
     """Checks if a token is missing."""
     return (
         jsonify(
             {
-                "message": "Request does not contain an access token.",
+                "message": "Request does not contain a token.",
                 "error": "authorization_required",
             }
         ),
@@ -63,7 +63,7 @@ def missing_token(_):
 
 
 @jwt.needs_fresh_token_loader
-def token_not_fresh():
+def token_not_fresh(jwt_header, jwt_payload):
     """Checks if a token is not fresh."""
     return (
         jsonify(
