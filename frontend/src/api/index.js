@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 /**
  * Sets the API URL.
  */
-const API_URL = "http://127.0.0.1:5000/api";
+const API_URL = "http://172.16.67.117:5000/api";
 
 /**
  * Sets the default base URL for this axios instance.

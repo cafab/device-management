@@ -30,34 +30,25 @@ export default {
       devices: [],
       columns: [
         {
-           field: 'id',
-           label: 'ID',
-           width: 50,
-           numeric: true
-         },
-        {
-           field: 'serial_number',
-           label: 'Serial number',
-         },
-        {
            field: 'computer_name',
            label: 'Computer name',
+           width: 200
          },
         {
-           field: 'supplier',
-           label: 'Supplier',
+           field: 'ip_address',
+           label: 'IP Address',
          },
         {
-           field: 'price',
-           label: 'Price (CHF)',
+           field: 'current_account',
+           label: 'Current user',
          },
          {
-           field: 'purchase_date',
-           label: 'Purchase date',
+           field: 'previous_account',
+           label: 'Previous user',
          },
          {
-           field: 'notes',
-           label: 'Notes',
+           field: 'timestamp',
+           label: 'Last seen',
          }
       ],
       isLoading: false
@@ -72,16 +63,20 @@ export default {
           let devicesPrepared = []
           response.data.devices.forEach(d => {
             let device = {}
-            device.id = d.id,
             device.serial_number = d.serial_number,
             device.computer_name =  d.computer_name,
-            device.supplier = d.purchase_details[0].supplier,
+            device.ip_address =  d.ip_address,
+            device.timestamp =  d.timestamp,
+            device.current_account =  d.accounts[0].current_account,
+            device.previous_account =  d.accounts[0].previous_account,
+            /**device.supplier = d.purchase_details[0].supplier,
             device.price = d.purchase_details[0].price,
             device.purchase_date = d.purchase_details[0].purchase_date,
-            device.notes = d.purchase_details[0].notes
+            device.notes = d.purchase_details[0].notes**/
             devicesPrepared.push(device);
           });
           this.devices = devicesPrepared;
+
         })
         .catch(console.log)
         .finally(() => this.isLoading = false);

@@ -1,10 +1,11 @@
 import click
 import random, string
 import decimal
-from datetime import date
+import datetime
+import names
 from flask.cli import FlaskGroup
 from src.app import create_app
-from src.models import db, User, Computer, PurchaseDetails
+from src.models import db, User, Computer, PurchaseDetails, Accounts
 
 
 @click.group(cls=FlaskGroup, create_app=create_app)
@@ -37,20 +38,59 @@ def create_devices():
     # Create computers and purchase details
     computer_list = []
     for i in range(number_of_devices):
+        # Create computer object
         serial_number = "".join(random.choices(string.ascii_letters + string.digits, k=10)).upper()
         computer_name = "PC-" + str(i+1)
-        # Create computer object
-        computer = Computer(serial_number=serial_number, computer_name=computer_name)
-  
+        ip_address = "192.168.0." + str(random.randrange(10, 255))
+        timestamp = datetime.datetime.utcnow()
+        os = "Windows 10 Pro, 1909, 64-bit"
+        os_install_date = datetime.date(2017, 1, 1) + datetime.timedelta(days=random.randrange(1200))
+        computerModel = "HP ProBook 650 G" + str(random.randrange(1, 5))
+        cpu = "Intel(R) Core(TM) i5-4300M CPU @ 2.6GHz"
+        memory = "8 GB"
+        hardDisk = random.choice(["256 GB, SSD", "128 GB, SSD", "256 GB, HDD"])
+            
+        computer = Computer( 
+            serial_number=serial_number,
+            computer_name=computer_name, 
+            ip_address=ip_address, 
+            timestamp=timestamp,
+            os=os,
+            os_install_date=os_install_date,
+            computerModel=computerModel,
+            cpu=cpu,
+            memory=memory,
+            hardDisk=hardDisk
+        )
+
+        # Create purchase_details object
         supplier = random.choice(["Digitec", "STEG Electronics", "Microspot", "Brack"])
         price = float(decimal.Decimal(random.randrange(1000, 10000))/100) + float(random.randint(900,1400))
-        purchase_date = date(year=2020, month=random.randint(1,12), day=random.randint(1,28))
-        # Create purchase_details object
-        purchase_details = PurchaseDetails(supplier=supplier, price=price, purchase_date=purchase_date, computer=computer)
+        purchase_date = datetime.date(2020, 1, 1) + datetime.timedelta(days=random.randrange(365))
+        
+        purchase_details = PurchaseDetails(
+            supplier=supplier, 
+            price=price, 
+            purchase_date=purchase_date, 
+            computer=computer
+        )
+
+        # Create accounts object
+        current_account = names.get_first_name()[:1].lower() + names.get_last_name()[:2].lower()
+        previous_account = names.get_first_name()[:1].lower() + names.get_last_name()[:2].lower()
+
+        accounts = Accounts(
+            current_account=current_account, 
+            previous_account=previous_account,
+            computer=computer
+        )
+
         
         db.session.add(computer)
         db.session.add(purchase_details)
-        db.session.commit()
+        db.session.add(accounts)
+    
+    db.session.commit()
 
     click.echo(str(number_of_devices) + " devices and purchase details have been created.\n")
 
@@ -59,12 +99,11 @@ def create_devices():
 def seed_db():
     create_db()
     create_admin()
-    create_devices()
+    
 
-@cli.command("drop_db")
-def drop_db():
-    db.drop_all()
-    click.echo("\nDatabase dropped.\n")
+@cli.command("create_devices")
+def seed_devices():
+    create_devices()
 
 
 if __name__ == "__main__":

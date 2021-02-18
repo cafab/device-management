@@ -6,7 +6,15 @@ from flask_jwt_extended import (
     get_jwt_identity,
     get_jwt
 )
-from src.models import db, User, Computer, PurchaseDetails, ComputerSchema, PurchaseDetailsSchema
+from src.models import (
+    db, 
+    User, 
+    Computer,
+    Accounts, 
+    PurchaseDetails, 
+    ComputerSchema, 
+    PurchaseDetailsSchema
+)
 from src.jwt import blacklist
 from argon2 import PasswordHasher
 from argon2.exceptions import (
@@ -17,6 +25,49 @@ from argon2.exceptions import (
 )
 
 api = Blueprint("api", __name__)
+
+
+@api.route("/script-device", methods=["POST"])
+#@jwt_required()
+def post_script_device():
+    data = request.get_json()
+    computer = Computer.query.filter_by(serial_number=data['serialNumber']).first()
+
+    if not computer:
+        """Create new Computer object"""
+        computer = Computer(
+            computer_name = data["computerName"],
+            ip_address = data["ipAddresses"],
+            timestamp = data["timestamp"],
+            os = data["os"],
+            os_install_date = data["osInstallDate"],
+            serial_number = data["serialNumber"],
+            computerModel = data["computerModel"],
+            cpu = data["cpu"],
+            memory = data["memory"],
+            hardDisk = data["hardDisk"]
+        )
+
+        account = Accounts(
+            current_account = data["user"],
+            previous_account = None,
+            computer = computer
+        )
+
+        db.session.add_all([computer, account])
+        db.session.commit()
+    else:
+        computer.timestamp = data['timestamp']
+        account = Accounts.query.filter_by(computer_sn=data["serialNumber"]).first()
+        account.previous_account = account.current_account
+        account.current_account = data["user"]
+
+        db.session.add_all([computer, account])
+        db.session.commit()
+
+    json_data = ComputerSchema().dump(computer)
+    
+    return jsonify({"purchase_details": json_data}), 200
 
 
 @api.route("/devices", methods=["GET"])
@@ -36,7 +87,7 @@ def get_devices():
 def put_edit_devices():
     data = request.get_json()
 
-    purchase_details = PurchaseDetails.query.filter_by(computer_id=data['id']).first()
+    purchase_details = PurchaseDetails.query.filter_by(computer_sn=data['serial_number']).first()
     json_data = PurchaseDetailsSchema().dump(purchase_details)
 
     if not purchase_details:
