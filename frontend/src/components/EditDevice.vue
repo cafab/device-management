@@ -47,7 +47,6 @@ export default {
   created() {
       // Copy the device properties because props cannot
       // be modified directly.
-      this.config.id = this.device.id;
       this.config.serial_number = this.device.serial_number;
       this.config.computer_name = this.device.computer_name;
       this.config.supplier = this.device.supplier;
@@ -58,7 +57,6 @@ export default {
   data() {
       return {
           config: {
-              id: Number,
               serial_number: String,
               computer_name: String,
               supplier: String,
