@@ -16,6 +16,6 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Flask-JWT-Extended
-    JWT_ACCESS_TOKEN_EXPIRES = 300  # 5 minutes
+    JWT_ACCESS_TOKEN_EXPIRES = 10  # 5 minutes
     JWT_REFRESH_TOKEN_EXPIRES = 43200  # 12 hours
     JWT_SECRET_KEY = "mysecretkey"  # CHANGE THE KEY!

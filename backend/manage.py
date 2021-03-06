@@ -45,10 +45,10 @@ def create_devices():
         timestamp = datetime.datetime.utcnow()
         os = "Windows 10 Pro, 1909, 64-bit"
         os_install_date = datetime.date(2017, 1, 1) + datetime.timedelta(days=random.randrange(1200))
-        computerModel = "HP ProBook 650 G" + str(random.randrange(1, 5))
+        computer_model = "HP ProBook 650 G" + str(random.randrange(1, 5))
         cpu = "Intel(R) Core(TM) i5-4300M CPU @ 2.6GHz"
         memory = "8 GB"
-        hardDisk = random.choice(["256 GB, SSD", "128 GB, SSD", "256 GB, HDD"])
+        hard_disk = random.choice(["256 GB, SSD", "128 GB, SSD", "256 GB, HDD"])
             
         computer = Computer( 
             serial_number=serial_number,
@@ -57,10 +57,10 @@ def create_devices():
             timestamp=timestamp,
             os=os,
             os_install_date=os_install_date,
-            computerModel=computerModel,
+            computer_model=computer_model,
             cpu=cpu,
             memory=memory,
-            hardDisk=hardDisk
+            hard_disk=hard_disk
         )
 
         # Create purchase_details object

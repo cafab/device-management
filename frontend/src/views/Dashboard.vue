@@ -18,7 +18,7 @@
 
 <script>
 import * as api from "@/api";
-import EditDevice from "@/components/EditDevice.vue";
+//import EditDevice from "@/components/EditDevice.vue";
 
 export default {
   name: "Dashboard",
@@ -39,15 +39,15 @@ export default {
            label: 'IP Address',
          },
         {
-           field: 'current_account',
+           field: 'accounts.0.current_account',
            label: 'Current user',
          },
          {
-           field: 'previous_account',
+           field: 'accounts.0.previous_account',
            label: 'Previous user',
          },
          {
-           field: 'timestamp',
+           field: 'accounts.0.last_seen',
            label: 'Last seen',
          }
       ],
@@ -60,49 +60,13 @@ export default {
       api
         .getDevices()
         .then((response) => {
-          let devicesPrepared = []
-          response.data.devices.forEach(d => {
-            let device = {}
-            device.serial_number = d.serial_number,
-            device.computer_name =  d.computer_name,
-            device.ip_address =  d.ip_address,
-            device.timestamp =  d.timestamp,
-            device.current_account =  d.accounts[0].current_account,
-            device.previous_account =  d.accounts[0].previous_account,
-            /**device.supplier = d.purchase_details[0].supplier,
-            device.price = d.purchase_details[0].price,
-            device.purchase_date = d.purchase_details[0].purchase_date,
-            device.notes = d.purchase_details[0].notes**/
-            devicesPrepared.push(device);
-          });
-          this.devices = devicesPrepared;
-
+          this.devices = response.data.devices;
         })
         .catch(console.log)
         .finally(() => this.isLoading = false);
     },
     editDevice(device_event) {
-      this.$buefy.modal.open({
-      
-        props: {
-          title: "Edit Device",
-          device: device_event,
-        },
-        component: EditDevice,
-        parent: this,
-        hasModalCard: true,
-        trapFocus: true,
-        /**
-         * Listens for events emitted by the EditDevice
-         * component.
-         */
-        events: {
-          saved: (editedDevice) => {
-            console.log(editedDevice);
-            this.getDevices();
-          }
-        },
-      });
+      this.$router.push({ name: 'EditDevice', params: { device: device_event }})
     }
   },
   computed: {
