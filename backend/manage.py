@@ -54,7 +54,6 @@ def create_devices():
             serial_number=serial_number,
             computer_name=computer_name, 
             ip_address=ip_address, 
-            timestamp=timestamp,
             os=os,
             os_install_date=os_install_date,
             computer_model=computer_model,
