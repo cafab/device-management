@@ -1,6 +1,6 @@
 # Device-Management
 A device management inventory tool. In this demo you can seed the database with random data and display it as a table in the frontend.
-The devices can be edited and changes are reflected immediately. A device powershell script can be deployed and executed trough GPO's by a Sysadmin. This project was conducted in the Javascript module at the Bern University of Applied Science (BFH).
+The devices can be edited and changes are reflected immediately. A device powershell script can be deployed and executed trough GPO's by a Sysadmin that collects all relevant information about the devices on a company network and sends them to the backend. This project was conducted in the Javascript module at the Bern University of Applied Science (BFH).
 
 ## Technologies
 
