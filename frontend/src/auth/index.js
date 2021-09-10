@@ -25,10 +25,14 @@ export const auth = Vue.observable({
       this.data.refreshToken = value;
     },
     isExpiredAccessToken() {
-      const data = JSON.parse(atob(this.data.accessToken.split(".")[1]));
-      // JS deals with dates in milliseconds since epoch
-      const exp = new Date(data.exp * 1000);
-      const now = new Date();
-      return now > exp;
+      try {
+        const data = JSON.parse(atob(this.accessToken.split(".")[1]));
+        // JS deals with dates in milliseconds since epoch
+        const exp = new Date(data.exp * 1000);
+        const now = new Date();
+        return now > exp;
+      } catch {
+        return true;
+      }
     },
   });

@@ -10,10 +10,12 @@ from src.models import (
     db, 
     User, 
     Computer,
+    PurchaseDetails,
     Accounts, 
-    PurchaseDetails, 
+)
+from src.schemas import (
     ComputerSchema, 
-    PurchaseDetailsSchema
+    PurchaseDetailsSchema,
 )
 from src.jwt import blacklist
 from argon2 import PasswordHasher
@@ -24,6 +26,7 @@ from argon2.exceptions import (
     VerifyMismatchError,
 )
 
+
 api = Blueprint("api", __name__)
 
 
@@ -31,43 +34,60 @@ api = Blueprint("api", __name__)
 #@jwt_required()
 def post_script_device():
     data = request.get_json()
-    computer = Computer.query.filter_by(serial_number=data['serialNumber']).first()
+    print(str(type(data['hard_disk'])), flush=True)
+
+    computer = Computer.query.filter_by(serial_number=data['serial_number']).first()
 
     if not computer:
-        """Create new Computer object"""
+        """Virtualbox serial number is 0 => take computer name as serial number instead."""
+        if data['serial_number'] == "0":
+            data['serial_number'] = data['computer_name']
+
+        """Create computer object."""
         computer = Computer(
-            computer_name = data["computerName"],
-            ip_address = data["ipAddresses"],
-            timestamp = data["timestamp"],
+            computer_name = data["computer_name"],
+            ip_address = data["ip_addresses"],
             os = data["os"],
-            os_install_date = data["osInstallDate"],
-            serial_number = data["serialNumber"],
-            computerModel = data["computerModel"],
+            os_install_date = data["os_install_date"],
+            serial_number = data["serial_number"],
+            computer_model = data["computer_model"],
             cpu = data["cpu"],
             memory = data["memory"],
-            hardDisk = data["hardDisk"]
+            hard_disk = data["hard_disk"]
         )
 
+        """Create account information."""
         account = Accounts(
             current_account = data["user"],
             previous_account = None,
+            last_seen = data["last_seen"],
             computer = computer
         )
-
-        db.session.add_all([computer, account])
-        db.session.commit()
     else:
-        computer.timestamp = data['timestamp']
-        account = Accounts.query.filter_by(computer_sn=data["serialNumber"]).first()
-        account.previous_account = account.current_account
+        """Update computer object."""
+        computer.computer_name = data["computer_name"],
+        computer.ip_address = data["ip_addresses"],
+        computer.os = data["os"],
+        computer.os_install_date = data["os_install_date"],
+        computer.serial_number = data["serial_number"],
+        computer.computer_model = data["computer_model"],
+        computer.cpu = data["cpu"],
+        computer.memory = data["memory"],
+        computer.hard_disk = data["hard_disk"]
+        
+        """Update account information."""
+        account = Accounts.query.filter_by(computer_sn=data["serial_number"]).first()
+
+        if account.current_account != data['user']:
+            account.previous_account = account.current_account
+            
         account.current_account = data["user"]
-
-        db.session.add_all([computer, account])
-        db.session.commit()
-
-    json_data = ComputerSchema().dump(computer)
+        account.last_seen = data['last_seen']
     
-    return jsonify({"purchase_details": json_data}), 200
+    db.session.add_all([computer, account])
+    db.session.commit()
+
+    return jsonify({"message": "Computer successfully created."}), 201
 
 
 @api.route("/devices", methods=["GET"])
@@ -77,31 +97,59 @@ def get_devices():
     json_data = ComputerSchema(many=True).dump(devices)
 
     if not devices:
-        return jsonify({"message": "No devices available"}), 200
+        return jsonify({"message": "No devices available."}), 200
     
     return jsonify({"devices": json_data}), 200
 
 
-@api.route("/edit-device", methods=["PUT"])
+@api.route("/purchase-details", methods=["POST"])
 @jwt_required()
-def put_edit_devices():
+def post_purchase_details():
     data = request.get_json()
+    print(str(data), flush=True)
+    data_load = PurchaseDetailsSchema().load(data)
+    print(str(data_load), flush=True)
 
-    purchase_details = PurchaseDetails.query.filter_by(computer_sn=data['serial_number']).first()
-    json_data = PurchaseDetailsSchema().dump(purchase_details)
+    computer = Computer.query.filter_by(serial_number=data_load['serial_number']).first()
 
-    if not purchase_details:
-        return jsonify({"message": "No such purchase details found."}), 400
-    
-    purchase_details.supplier = data['supplier']
-    purchase_details.price = data['price']
-    purchase_details.purchase_date = data['purchase_date']
-    purchase_details.notes = data['notes']
+    if not computer:
+        return jsonify({"message": "Computer does not exist."}), 400
 
+    purchase_details = PurchaseDetails(
+        supplier = data_load['supplier'],
+        price = data_load['price'],
+        purchase_date = data_load['purchase_date'],
+        notes = data_load['notes'],
+        computer = computer
+    )
     db.session.add(purchase_details)
     db.session.commit()
+
+    return jsonify({"message": "Purchase details successfully created."}), 201
+
+
+@api.route("/purchase-details", methods=["PUT"])
+@jwt_required()
+def put_purchase_details():
+    data = request.get_json()
+    data_load = PurchaseDetailsSchema().load(data)
+    print(str(data_load), flush=True)
+    purchase_details = PurchaseDetails.query.filter_by(id=data_load['id']).first()
     
-    return jsonify({"purchase_details": json_data}), 200
+
+    if not purchase_details:
+        return jsonify({"message": "Purchase details do not exist."}), 400
+
+       
+    purchase_details.supplier = data_load['supplier']
+    purchase_details.price = data_load['price']
+    purchase_details.purchase_date = data_load['purchase_date']
+    purchase_details.notes = data_load['notes']
+    
+    db.session.add(purchase_details)
+    db.session.commit()
+
+    return jsonify({"message": "Purchase details successfully updated."}), 200
 
 
 

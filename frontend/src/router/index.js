@@ -3,7 +3,9 @@ import VueRouter from "vue-router";
 import Login from "@/views/Login.vue";
 import Dashboard from "@/views/Dashboard.vue";
 import Home from "@/views/Home.vue";
-import { getCheckLoggedIn } from "@/api";
+import EditDevice from "@/components/EditDevice.vue";
+import { auth } from "@/auth";
+import { triggerTokenRefresh } from "@/api";
 
 Vue.use(VueRouter);
 
@@ -33,6 +35,12 @@ const routes = [
     component: Dashboard,
   },
   {
+    path: "/edit-device",
+    name: "EditDevice",
+    component: EditDevice,
+    props: true
+  },
+  {
     path: "*",
     // When the path entered by the user doesn't match,
     // then he will be redirected to /login
@@ -57,21 +65,13 @@ const router = new VueRouter({
  * user will be redirected to the Login view.
  */
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.public)) {
-    /**
-     * The axios interceptor handles all error responses
-     * with the standard Notification handler.
-     */
-    getCheckLoggedIn(false);
-    next();
-  } else {
-    /**
-     * An error response wouldn't be shown as
-     * a notificatione by the axios interceptor.
-     */
-    getCheckLoggedIn(true);
-    next();
+  // `public` is a reserved keyword
+  let isPublic = to.matched.some((record) => record.meta.public);
+  
+  if (!isPublic && auth.isExpiredAccessToken()) {
+    triggerTokenRefresh()
   }
+  next();
 });
 
 export default router;

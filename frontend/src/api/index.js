@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 /**
  * Sets the API URL.
  */
-const API_URL = "http://172.16.67.117:5000/api";
+const API_URL = "http://127.0.0.1:5000/api";
 
 /**
  * Sets the default base URL for this axios instance.
@@ -37,6 +37,7 @@ axios.interceptors.response.use(
    * API caller function.
    */
   (response) => {
+    console.log("successful response intercept: " + response)
     return response;
   },
   /**
@@ -59,6 +60,7 @@ axios.interceptors.response.use(
      * requests fail at the time.
      */
     if (error.response.config.url.includes("token/refresh")) {
+      console.log("error response intercept (includes token/refresh)")
       auth.refreshToken = null;
       auth.accessToken = null;
       redirect = "/login";
@@ -71,6 +73,7 @@ axios.interceptors.response.use(
      * to the login page.
      */
     if (error.response.data.error == "invalid_token") {
+      console.log("error response intercept (equals invalid_token)")
       auth.refreshToken = null;
       auth.accessToken = null;
       router.replace("/login").catch(() => {});
@@ -87,6 +90,7 @@ axios.interceptors.response.use(
       errors.indexOf(error.response.data.error) !== -1 &&
       !error.response.config.url.includes("token/refresh")
     ) {
+      console.log("error response intercept (token/refresh not included): " + error.response.config.url + ", " + error.response.data.error)
       return Promise.reject(error);
     }
 
@@ -97,6 +101,7 @@ axios.interceptors.response.use(
      * the user.
      */
     if (isHandlerEnabled(error.config) && error.response) {
+      console.log("error response intercept (handlerEnabled and response)")
       if (redirect) {
         router.replace(redirect).catch(() => {});
       }
@@ -110,7 +115,7 @@ axios.interceptors.response.use(
         message: message,
       });
     }
-
+    console.log("error response intercept last promise reject!)")
     return Promise.reject(error);
   }
 );
@@ -122,18 +127,22 @@ axios.interceptors.response.use(
  * /token/refresh route in order to receive a new access token.
  */
 function refreshAuthLogic(failedRequest) {
+  console.log("refreshAuthLogic function triggered: ")
+  console.log(failedRequest.config)
   let handlerEnabled = isHandlerEnabled(failedRequest.config);
   if (errors.indexOf(failedRequest.response.data.error) !== -1) {
-    return postRefreshToken(handlerEnabled).then((tokenRefreshResponse) => {
-      auth.accessToken = tokenRefreshResponse.data.access_token;
-      failedRequest.response.config.headers["Authorization"] =
-        "Bearer " + tokenRefreshResponse.data.access_token;
-      return Promise.resolve();
-    });
+    return postRefreshToken(handlerEnabled)
+      .then((tokenRefreshResponse) => {
+        auth.accessToken = tokenRefreshResponse.data.access_token;
+        failedRequest.response.config.headers["Authorization"] =
+          "Bearer " + tokenRefreshResponse.data.access_token;
+        return Promise.resolve();
+      });
     // catch() doesn't work here. It is never called...
     // that is why there is another inteceptor above
   }
   // Correctly reject everything that is not "token_expired"
+  console.log("refreshAuthLogic Promise reject ")
   return Promise.reject();
 }
 
@@ -142,6 +151,8 @@ function refreshAuthLogic(failedRequest) {
  * requests that have come in while waiting for a new authorization 
  * token and resolves them when a new token is available.
  */
+
+console.log("createAuthRefreshInterceptor function triggered")
 createAuthRefreshInterceptor(axios, refreshAuthLogic);
 
 /**
@@ -166,6 +177,7 @@ axios.interceptors.request.use((request) => {
     token = auth.accessToken;
   }
   if (token) {
+    console.log("request interceptor has token")
     request.headers["Authorization"] = `Bearer ${token}`;
   }
   return request;
@@ -187,7 +199,7 @@ export function login(userData) {
  */
 export function revokeTokens() {
   let revokeAccessToken = () => axios.delete("/revoke-access-token");
-  let revokeRefreshToken = () =>
+  let revokeRefreshToken = () => 
     axios.delete("/revoke-refresh-token", { useRefreshToken: true });
 
   /**
@@ -219,8 +231,8 @@ export function postRefreshToken(handlerEnabled) {
 /**
  * Any empty request to the backend to check if the user is still logged in.
  */
-export function getCheckLoggedIn(handlerEnabled) {
-  return axios.get("/check-logged-in", { handlerEnabled: handlerEnabled });
+export function triggerTokenRefresh() {
+  return axios.get("/check-logged-in");
 }
 
 /**
@@ -231,7 +243,7 @@ export function getDevices() {
 }
 
 export function editDevice(payload) {
-  return axios.put("/edit-device", payload);
+  return axios.post("/purchase-details", payload);
 }
 
 
