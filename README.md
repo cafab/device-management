@@ -1,7 +1,6 @@
-# device-management
+# Device-Management
 A device management inventory tool. In this demo you can seed the database with random data and display it as a table in the frontend.
-The devices can be edited and changes are reflected immediately. This project is by far not finished yet, one milestone would be
-adding the processing of a PowerShell script, that would be automatically sent by a computer whenever a user logs in.
+The devices can be edited and changes are reflected immediately. A device powershell script can be deployed and executed trough GPO's by a Sysadmin. This project was conducted in the Javascript module at the Bern University of Applied Science (BFH).
 
 ## Technologies
 
@@ -14,7 +13,7 @@ Following technologies have been used:
 
 ## What I learned
 
-About Vue.js I gained more experience through this little project. For example data that get passed as props to the child component
+I gained more experience about Vue.js through this little project. For example data that get passed as props to the child component
 should not be modified, instead make a separate object in the `data()` property and copy the props values to this object. 
 Also the reactivity system of Vue I learned the hard way. Changes aren't immediately visible in the DOM when using a simple Javascript state management object. Instead for a simple store, use the `Vue.obeservable()` object, which then can be used in the computed property of a component. Also about JWT and how they
 should be stored I learned a lot. In this project I saved both, the access and refresh token in memory, therefore if you refresh the
