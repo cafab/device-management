@@ -26,7 +26,6 @@ from argon2.exceptions import (
     VerifyMismatchError,
 )
 
-from pprint import pprint
 
 api = Blueprint("api", __name__)
 
@@ -107,6 +106,7 @@ def get_devices():
 @jwt_required()
 def post_purchase_details():
     data = request.get_json()
+    print(str(data), flush=True)
     data_load = PurchaseDetailsSchema().load(data)
     print(str(data_load), flush=True)
 

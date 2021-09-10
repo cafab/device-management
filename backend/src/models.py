@@ -23,6 +23,7 @@ class Computer(db.Model):
     memory = db.Column(db.String(255), nullable=False)
     hard_disk = db.Column(db.String(255), nullable=False)    
 
+
 # backref creates a virtual column in the PurchaseDetails table
 # uselist=False ensures a One-to-One relation between the computer and PurchaseDetails table
 class PurchaseDetails(db.Model):

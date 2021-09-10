@@ -243,7 +243,7 @@ export function getDevices() {
 }
 
 export function editDevice(payload) {
-  return axios.put("/purchase-details", payload);
+  return axios.post("/purchase-details", payload);
 }
 
 
